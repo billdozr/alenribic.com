@@ -1,0 +1,490 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Introduction to Cloud Haskell</title>
+
+		<meta name="description" content="Introduction to Cloud Haskell - An approach to distributed programming in Haskell">
+		<meta name="author" content="Alen Ribic">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<link rel="stylesheet" href="css/reveal.min.css">
+		<link rel="stylesheet" href="css/theme/default.css" id="theme">
+
+		<!-- For syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+        <!--<link rel="stylesheet" href="css/code-highlight/syntax.css">-->
+
+		<!-- If the query includes 'print-pdf', use the PDF print sheet -->
+		<script>
+			document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+
+				<section>
+					<h1>Introduction to Cloud Haskell</h1>
+					<h4>An approach to distributed programming in Haskell</h4>
+					<p>
+						<small>Alen Ribic / <a href="https://twitter.com/alenribic">@alenribic</a></small>
+					</p>
+                    <p>
+                        <small>January 2013, Lambda Luminaries</small><br/>
+                        <img src="http://alenribic.com/images/HaskellLogo_s.png" style="background-color: #ffffff"/>
+                    </p>
+				</section>
+
+				<section>
+					<h2>In this talk...</h2>
+                    <ul>
+                        <li>Fundamentals of Cloud Haskell</li>
+                        <li>Tutorial</li>
+                        <li>Cloud Haskell and embedded systems</li>
+                        <li>Current state and Future work</li>
+                    </ul>
+				</section>
+
+				<section>
+					<section>
+						<h2>What is Cloud Haskell?</h2>
+                        <blockquote>
+                            Cloud Haskell is a DSL for developing programs for a distributed computing environment in Haskell.
+                        </blockquote>
+                        <ul>
+                            <li class="fragment">No changes to the language (shallow embedding as library)</li>
+                            <li class="fragment">Programming at the same level as with Concurrent Haskell elements (forkIO, MVar)</li>
+                            <li class="fragment">Computational model strongly based on the message-passing model of Erlang</li>
+                            <li class="fragment">We leverage Haskell’s purity, types, and monads</li>
+                        </ul>
+					</section>
+				</section>
+
+				<section>
+					<h2>Programming model</h2>
+					<ul>
+                        <li>Explicit concurrency</li>
+                        <li>Lightweight processes</li>
+                        <li>No state shared between processes</li>
+                        <li>Asynchronous message passing</li>
+					</ul>
+                    <br/><br/>
+                    <p class="fragment">Often called the '<a href="http://en.wikipedia.org/wiki/Actor_model" target="_blank">Actor model</a>'</p>
+				</section>
+
+				<section>
+                    <section>
+                        <h2>Background and ideas</h2>
+                    </section>
+                    <section>
+                        <h3>Papers</h3>
+                        <ul>
+                            <li><a href="http://research.microsoft.com/en-us/um/people/simonpj/papers/parallel/remote.pdf" target="_blank">Toward Haskell in the Cloud</a> by Jeff Epstein, Andrew Black, and Simon Peyton Jones</li>
+                            <li><a href="http://research.microsoft.com/en-us/um/people/simonpj/papers/parallel/epstein-thesis.pdf" target="_blank">Functional programming for the data centre</a> by Jeff Epstein. Masters Thesis, University of Cambridge</li>
+                            <li><a href="http://dl.acm.org/citation.cfm?id=1863514" target="_blank">A Unified Semantics for Future Erlang</a> by Hans Svensson, Lars-Ake Fredlund and Clara Benac Earle</li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h3>Initial prototype</h3>
+                        <ul>
+                            <li><a href="https://github.com/jepst/CloudHaskell" target="_blank">remote</a> package by Jeff Epstein</li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h3>Implementation</h3>
+                        <ul>
+                            <li><a href="https://github.com/haskell-distributed/distributed-process" target="_blank">distributed-process</a> package by Well-Typed (project led by Well-Typed's Edsko de Vries)</li>
+                        </ul>
+                    </section>
+				</section>
+
+				<section>
+					<h2>Cloud Haskell design</h2>
+					<ul>
+                        <li class="fragment">Lightweight processes as <strong>Process</strong> monad (built on GHC's lightweight threads)</li>
+                        <li class="fragment">Can spawn, monitor and terminate process on any node</li>
+                        <li class="fragment">Inter-process communication by sending messages</li>
+                        <li class="fragment">Can send and receive messages of any type (Erlang)</li>
+                        <li class="fragment">Can leverage Haskell's strong type system to provide static guarantees about the content of messages (typed channels)</li>
+                        <li class="fragment">Novel method for serializing function closures that enables higher-order functions to be used in a distributed environment</li>
+					</ul>
+				</section>
+
+                <section>
+                    <section>
+					    <h2>The interface functions of Cloud Haskell</h2>
+                    </section>
+                    <section>
+                        <h4>Basic types</h4>
+                        <pre><code class="haskell" contenteditable>
+newtype Process a = Process {
+        unProcess :: ReaderT LocalProcess IO a
+} deriving (Functor, Monad, MonadIO, MonadReader LocalProcess,
+            Typeable, Applicative)
+
+data ProcessId
+data NodeId
+
+class (Binary a, Typeable a) => Serializable a
+                        </code></pre>
+                    </section>
+                    <section>
+                        <h4>Basic messaging</h4>
+                        <pre><code class="haskell" contenteditable>
+send :: Serializable a => ProcessId -> a -> Process ()
+expect :: Serializable a => Process a
+                        </code></pre>
+				    </section>
+                    <section>
+                        <h4>Advanced messaging</h4>
+                        <pre><code class="haskell" contenteditable>
+receiveWait :: [Match b] -> Process b
+receiveTimeout :: Int -> [Match b] -> Process (Maybe b)
+match :: Serializable a => (a -> Process b) -> Match b
+matchIf :: Serializable a => (a -> Bool) -> (a -> Process b) -> Match b
+                        </code></pre>
+                    </section>
+                    <section>
+                        <h4>Process management</h4>
+                        <pre><code class="haskell" contenteditable>
+spawn :: NodeId -> Closure (Process ()) -> Process ProcessId
+terminate :: Process a
+getSelfPid :: Process ProcessId
+getSelfNode :: Process NodeId
+                        </code></pre>
+                    </section>
+                    <section>
+                        <h4>Process monitoring</h4>
+                        <pre><code class="haskell" contenteditable>
+link :: ProcessId -> Process ()
+monitor :: ProcessId -> Process MonitorRef
+                        </code></pre>
+                    </section>
+                    <section>
+                        <h4>Logging</h4>
+                        <pre><code class="haskell" contenteditable>
+say :: String -> Process ()
+                        </code></pre>
+                    </section>
+                </section>
+                <section>
+                    <section>
+                        <h2>distributed-process</h2>
+                        <h4>Implementation design decisions - highlights</h4>
+                        <ul>
+                            <li class="fragment">Swappable network transport layer</li>
+                            <li class="fragment">Multiple Cloud Haskell backends to handle</li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h4>distributed-process internal design</h4>
+                        <pre>
++------------------------------------------------------------+
+|                        Application                         |
++------------------------------------------------------------+
+|                               |
+V                               V
++-------------------------+   +------------------------------+
+|      Cloud Haskell      |<--|    Cloud Haskell Backend     |
++-------------------------+   +------------------------------+
+|           ______/             |
+V           V                   V
++-------------------------+   +------------------------------+
+|   Transport Interface   |<--|   Transport Implementation   |
++-------------------------+   +------------------------------+
+|
+V
++------------------------------+
+| Haskell/C Transport Library  |
++------------------------------+
+                        </pre>
+                    </section>
+                    <section>
+                        <h4>Network transport layer</h4>
+                        <p>Implementations</p>
+                        <ul>
+                            <li>TCP/IP</li>
+                            <li>Unix pipes (in progress)</li>
+                            <li>CCI (in progress)<br/>
+                                (Common Communication Interface is an HPC networking library supporting inﬁniband, etc.)</li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h4>Network transport layer</h4>
+                        <p>Also possible</p>
+                        <ul>
+                            <li>Shared memory</li>
+                            <li>SSH (One could write an interesting ops tool!)</li>
+                            <li>UDP</li>
+                            <li>TCP with SSL/TLS</li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h4>Cloud Haskell backends</h4>
+                        <p>"SimpleLocalnet" backend</p>
+                        <ul>
+                            <li>Simple backend to get started quickly</li>
+                            <li>No conﬁguration</li>
+                            <li>Uses the TCP transport</li>
+                            <li>Node discovery using local UDP multicast</li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h4>Cloud Haskell backends</h4>
+                        <p>"Windows Azure" backend</p>
+                        <ul>
+                            <li>Uses Linux VMs</li>
+                            <li>Uses the TCP transport between the VMs</li>
+                            <li>Initialise with Azure account and SSL certificates</li>
+                            <li>Support for: VM enumeration, copying binaries to VMs, spawning nodes on VMs</li>
+                        </ul>
+                    </section>
+                </section>
+
+				<section>
+                    <section>
+					    <h2>Tutorial</h2>
+                        <p>Building a distributed app to find and sum up a number of prime factors for every natural number [1..n]</p>
+                    </section>
+                    <section>
+                        <h4>Prime factorization</h4>
+                        <pre><code contenteditable class="haskell">
+factors :: [Integer] -> Integer -> [Integer]
+factors qs@(p:ps) n
+  | n <= 1 = []
+  | m == 0 = p : factors qs d
+  | otherwise = factors ps n
+ where
+  (d,m) = n `divMod` p
+
+primeFactors :: Integer -> [Integer]
+primeFactors = factors primes
+
+numPrimeFactors :: Integer -> Integer
+numPrimeFactors = fromIntegral . length . primeFactors
+                            </code></pre>
+                            <small>Written by Dan Weston</small>
+                    </section>
+                    <section>
+                        <h4>Master</h4>
+                        <p>Push work to available nodes and sum up the results</p>
+                        <pre><code contenteditable class="haskell">
+master :: Integer -> [NodeId] -> Process Integer
+master n slaves = do
+  us <- getSelfPid
+
+  -- Start slave processes
+  slaveProcesses <- forM slaves $
+    \nid -> spawn nid ($(mkClosure 'slave) us)
+
+  -- Distribute 1 .. n amongst the slave processes
+  spawnLocal $ forM_ (zip [1 .. n] (cycle slaveProcesses)) $
+    \(m, them) -> send them m
+
+  -- Wait for the result
+  sumIntegers (fromIntegral n)
+
+sumIntegers :: Int -> Process Integer
+sumIntegers = go 0
+ where
+   go :: Integer -> Int -> Process Integer
+   go !acc 0 = return acc
+   go !acc n = do
+     m <- expect
+     go (acc + m) (n - 1)
+                        </code></pre>
+                    </section>
+                    <section>
+                        <h4>Slave</h4>
+                        <p>Compute the number of prime factors and send results to master node</p>
+                        <pre><code contenteditable class="haskell">
+slave :: ProcessId -> Process ()
+slave them = forever $ do
+  n <- expect
+  send them (numPrimeFactors n)
+
+remotable ['slave]
+                        </code></pre>
+                    </section>
+                    <section>
+                        <h4>main function</h4>
+                        <pre><code contenteditable class="haskell">
+main = do
+  args <- getArgs
+
+  case args of
+    ["master", host, port, n] -> do
+      backend <- initializeBackend host port rtable
+      startMaster backend $ \slaves -> do
+        result <- master (read n) slaves
+        liftIO $ print result
+    ["slave", host, port] -> do
+      backend <- initializeBackend host port rtable
+      startSlave backend
+                        </code></pre>
+                        <pre class="fragment">
+./prime-factors slave localhost 8081
+                        </pre>
+                        <pre class="fragment">
+./prime-factors master localhost 8080 100
+                        </pre>
+                        <pre class="fragment">
+=> 239
+                        </pre>
+                    </section>
+                    <section>
+                        <p>For more examples, check out the <a href="https://github.com/haskell-distributed/distributed-process/tree/master/distributed-process-demos" target="_blank">distributed-process-demos</a> package.</p>
+                    </section>
+				</section>
+
+                <section>
+                    <section>
+                        <h2>Cloud Haskell and embedded systems</h2>
+                        <p>A brief look at running Raspberry Pi in a Haskell Cloud</p>
+                        <img src="http://alenribic.com/images/CH_RPI_cloud_small.png" style="background-color: #ffffff"/>
+                    </section>
+                    <section>
+                        <h4>Why bother running Cloud Haskell on embedded devices?</h4>
+                        <p class="fragment">Cloud Haskell brings some key contributions that, in one form or another, can play a major role in the next generation of cloud computing. And because Raspberry Pi, through its sheer low cost and capability, has the potential to gain the greatest reach of any embedded system.</p>
+                    </section>
+                    <section>
+                        <h4>Status</h4>
+                        <ul>
+                            <li>Cloud Haskell running on Raspberry Pi without Template Haskell (a bit more work, lack of splicing $(mkClosure 'f))</li>
+                            <li>Tested with GHC 7.4.1 (ARM build, stage-1 compiler)</li>
+                            <li>Changes made to the distributed-process to enable sidestepping of TH where no stage-2 available</li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h4>TODO</h4>
+                        <ul>
+                            <li>GHC 7.4.2 stage-2 support (build distributed-process with TH support)</li>
+                            <li>Find a simpler way to cross-compile with GHC 7.x (current option is to install <a href="http://wiki.qemu.org/Main_Page">QEMU</a>), a generic and open source machine emulator</li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h4>Links</h4>
+                        <ul>
+                            <li><a href="http://alenribic.com/posts/2012-08-06-running-haskell-on-raspberry-pi.html" target="_blank">Running Haskell on Raspberry Pi</a> (blog)</li>
+                            <li><a href="http://alenribic.com/posts/2012-08-17-raspberry-pi-in-a-haskell-cloud.html" target="_blank">Raspberry Pi in a Haskell Cloud</a> (blog)</li>
+                            <li><a href="http://www.haskell.org/haskellwiki/Raspberry_Pi" target="_blank">Haskell Wiki - Raspberry Pi page</a></li>
+                            <li><a href="http://www.raspberrypi.org/" target="_blank">Raspberry Pi</a> (official site)</li>
+                        </ul>
+                    </section>
+                </section>
+
+                <section>
+                    <section>
+                        <h2>Current state of the implementation</h2>
+                    </section>
+                    <section>
+                        <ul>
+                            <li>Covers the full API</li>
+                            <li>Made a ﬁrst release and several minor bug-ﬁx releases</li>
+                            <li>Reasonable test suite</li>
+                            <li>Reasonable performance</li>
+                        </ul>
+                        <br/><br/>
+                        <p>Ready for serious experiments, but not yet for serious use.</p>
+                    </section>
+                </section>
+
+                <section>
+                    <section>
+                        <h2>Future work</h2>
+                    </section>
+                    <section>
+                        <h4>Signiﬁcant TODOs</h4>
+                        <ul>
+                            <li>Larger scale testing</li>
+                            <li>Node disconnect and reconnect needs more work and testing</li>
+                            <li>More demos</li>
+                            <li>Comparative benchmarking needed</li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h4>Wishlist</h4>
+                        <ul>
+                            <li>Shared memory transport</li>
+                            <li>SSH transport</li>
+                            <li>Ability to use multiple transports</li>
+                            <li>Implementation of the ‘static’ language extension</li>
+                            <li>Higher level libraries, such as a task layer framework</li>
+                        </ul>
+                    </section>
+                </section>
+
+                <section>
+                    <h2>Cloud Haskell Packages</h2>
+                    <p>Hackage</p>
+                    <ul>
+                        <li>distributed-process: The main CH package
+                        <li>distributed-process-simplelocalnet: Simple backend for local networks
+                        <li>network-transport: Transport interface
+                        <li>network-transport-tcp: TCP instantiation of Network.Transport
+                        <li>distributed-process-azure: Azure backend
+                    </ul>
+                    <br/><br/>
+                    <p>Source code and documentation</p>
+                    <a href="https://github.com/haskell-distributed/distributed-process" target="_blank">https://github.com/haskell-distributed/distributed-process</a>
+                </section>
+
+                <section>
+                    <h2>Acknowledgments</h2>
+                    <p><a href="http://www.haskell.org/wikiupload/4/46/Hiw2012-duncan-coutts.pdf" target="_blank">The New Cloud Haskell</a> presentation by Duncan Coutts and Edsko de Vries delivered at the Haskell Implementors Workshop.</p>
+                </section>
+
+				<section>
+					<h1>THE END</h1>
+					<h3>Alen Ribic  / <a href="http://alenribic.com" target="_blank">alenribic.com</a></h3>
+				</section>
+
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.min.js"></script>
+
+		<script>
+
+			// Full list of configuration options available here:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+				transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/none
+
+				// Optional libraries used to extend on reveal.js
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/showdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+					{ src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+					// { src: 'plugin/remotes/remotes.js', async: true, condition: function() { return !!document.body.classList; } }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
