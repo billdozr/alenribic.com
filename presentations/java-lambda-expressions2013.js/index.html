@@ -29,7 +29,7 @@
 		<script src="lib/js/html5shiv.js"></script>
 		<![endif]-->
 
-        <script type='text/javascript' src='http://cdn.mathjax.org/mathjax/2.1-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
+        <script type='text/javascript' src='js/MathJax/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
         <script type="text/javascript">
             MathJax.Hub.Config({
                 styles: { ".MathJax": { color: "#009800" } }
@@ -221,7 +221,7 @@
                         <p class="fragment">
                             But this is not really a limitation. Let's look at an example:
                             <p class="fragment">\(\lambda x.\lambda y. y + x\)</p>
-                            <p class="fragment">This effectively, means a lambda abstraction that when applied returns another lambda abstraction that itself takes a single argument (<b>currying</b>).</p>
+                            <p class="fragment">This effectively means a lambda abstraction that when applied returns another lambda abstraction that itself takes a single argument (<b>currying</b>).</p>
                         </p>
                         <br/>
                         <p class="fragment">
@@ -506,6 +506,9 @@ function linkify( selector ) {
 					// { src: 'plugin/remotes/remotes.js', async: true, condition: function() { return !!document.body.classList; } }
 				]
 			});
+            Reveal.addEventListener( 'slidechanged', function( event ) {
+                MathJax.Hub.Rerender(event.currentSlide);
+            });
 
 		</script>
 
