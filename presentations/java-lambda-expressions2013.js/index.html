@@ -66,7 +66,7 @@
                                 <li>Informal introduction to Lambda calculus</li>
                             </ul>
                         </li>
-                        <li>Lambda expressions and programming languages</li>
+                        <li>Lambda expressions and Java</li>
                         <li>Lambda syntax and semantics in Java</li>
                         <li>Time to write some code</li>
                         <li>Beyond Java 8</li>
@@ -238,11 +238,64 @@
 				</section>
 
 				<section>
-                    <section><h2>Lambda expressions and programming languages</h2></section>
-                    <section>TODO</section>
+                    <section><h2>Lambda expressions and Java</h2></section>
+                    <section>
+                        <h3>Lambda expression</h3>
+                        <ul>
+                            <li>Computational units that operate on some data (input) and produce some data (output)</li>
+                            <li class="fragment">Can be passed around as any other values, thus termed <b>higher-order</b> functions</li>
+                            <li class="fragment">Naturally compose based on the formal parameters and return types, \((g \circ f)x\)</li>
+                            <li class="fragment">
+                                Synonymous with the terms Lambda function, Anonymous function, and Closure
+                                <small>(Closure, if and only if the environment/stack is captured at the point that the lambda expression is created)</small>
+                            </li>
+                        </ul>
+                        <aside class="notes">
+                            Lambda expressions are computational units that operate on some data (input) and produce some new data (output).
+                            This encourages better separation of state and behaviour; one biggest issue that make parallel and concurrent programming a great challenge today.
+                        </aside>
+                    </section>
+                    <section>
+                        <h3>Why introduce Lambda expressions to Java?</h3>
+                        <p class="fragment">
+                            Numerous programming patters require nothing more than defining a unit of behaviour,
+                            yet we spend large portions of our time writing <b>ceremonious, boilerplate code</b>.
+                        </p>
+                        <p class="fragment">We need greater <b>expressive power</b>.</p>
+                        <p class="fragment">Inner classes are <b>syntactically bulky</b> and can be seen as <b>imperfect closures</b>. <small>(e.g. inability to capture the non-final local variables)</small></p>
+                        <p class="fragment">Lambda expressions can <b>solve</b> many of the <b>parallel</b> and <b>concurrent</b> programing <b>problems</b>. <small>(e.g problems such as inherently serial constructs like <b>for</b> loops, mutable accumulator variables, etc.)</small></p>
+                        <p class="fragment">Let's start <b>thinking bottom-up design</b> where applicable. Build smaller computational units and compose upwards towards the problem at hand.</p>
+                    </section>
 				</section>
 
+                <section>
+                    <section><h2>Lambda syntax and semantics in Java</h2></section>
+                    <section>TODO</section>
+                </section>
 
+                <section>
+                    <section>
+                        <h2>Time to write some code</h2>
+                        <img src="img/Ada_lovelace.jpg" style="height:50%;">
+                        <p>
+                            <small>
+                                <b>Ada Lovelace (1815 - 1852)</b>,
+                                <i>"Her notes on the Analytical Engine include what is recognized as the first algorithm intended to be processed by a machine.
+                                    Because of this, she is often considered the world's first computer programmer." -Wikipedia</i>
+                            </small>
+                        </p>
+                    </section>
+                </section>
+
+                <section>
+                    <h2>Beyond Java 8</h2>
+                    <p>TODO</p>
+                </section>
+
+                <section>
+                    <h2>References</h2>
+                    <p>TODO</p>
+                </section>
 
                 <section>
                     <h1>THE END</h1>
