@@ -47,8 +47,9 @@
 				<section>
 					<h1>Java 8</h1>
 					<h3>Introducing Lambda Expressions to the Java Programming Language</h3>
+                    <p><img src="img/oracle_clr.gif" style="margin:0;padding:0;border:0;"/></p>
 					<p>
-                        <small>Alen Ribic / <a href="https://twitter.com/alenribic" target="_blank">@alenribic</a></small>
+                        <small><a href="http://alenribic.com" target="_blank">Alen Ribic</a> / <a href="https://twitter.com/alenribic" target="_blank">@alenribic</a></small>
 					</p>
                     <p>
                         <small>April 2013, Jozi Java User Group</small><br/>
@@ -67,7 +68,7 @@
                             </ul>
                         </li>
                         <li>Lambda expressions and Java</li>
-                        <li>Lambda syntax and semantics in Java</li>
+                        <li>Lambda syntax and semantics in Java <small>(JSR 335)</small></li>
                         <li>Time to write some code</li>
                         <li>Beyond Java 8</li>
                     </ul>
@@ -269,8 +270,58 @@
 				</section>
 
                 <section>
-                    <section><h2>Lambda syntax and semantics in Java</h2></section>
-                    <section>TODO</section>
+                    <section>
+                        <h2>Lambda syntax and semantics in Java</h2>
+                        <p>JSR 335</p>
+                    </section>
+                    <section>
+                        <h3>Syntax of lambda expressions</h3>
+                        <pre><code>
+lambda = ArgList '->' Body
+ArgList = Identifier
+    | "(" Identifier [ "," Identifier ]* ")"
+    | "(" Type Identifier [ "," Type Identifier ]* ")"
+Body = Expression
+    | "{" [ Statement ";" ]+ "}"
+                        </code></pre>
+                    </section>
+                    <section>
+                        <h4>Examples of lambda expressions</h4>
+                        <ul style="list-style-type:none">
+                            <li class="fragment">() \(\rightarrow\) {} <small>// No parameters (unit); result is void</small></li>
+                            <li class="fragment">() \(\rightarrow\) 42 <small>// No parameters, expression body</small></li>
+                            <li class="fragment">() \(\rightarrow\) { return 42; } <small>// No parameters, block body with return</small></li>
+                            <li class="fragment">() \(\rightarrow\) { System.gc(); } <small>// No parameters, void block body</small></li>
+                            <li class="fragment">(int x) \(\rightarrow\) x+1 <small>// Single declared-type parameter</small></li>
+                            <li class="fragment">x \(\rightarrow\) x+1 <small>// Single inferred-type (parens optional for single parameter)</small></li>
+                            <li class="fragment">re \(\rightarrow\) re.compile("^hello/$") <small>// Single inferred-type, expression body</small></li>
+                            <li class="fragment">(x, y) \(\rightarrow\) x+y <small>// Multiple inferred-type parameters</small></li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h4>More fun examples</h4>
+                        <ul style="list-style-type:none">
+                            <li class="fragment">factorial = i \(\rightarrow\) i == 0 ? 1 : i * factorial.apply(i - 1);</li>
+                            <li>&nbsp;</li>
+                            <li class="fragment">
+                                OptionalInt r = Streams.intRange(1, 11) <small>// [1..10]</small><br/>
+                                &nbsp;&nbsp;&nbsp;.filter(n \(\rightarrow\) n % 2 == 0)<br/>
+                                &nbsp;&nbsp;&nbsp;.reduce((acc, n) \(\rightarrow\) acc * n);<br/>
+                            </li>
+                            <li class="fragment">out.println("<b>What does this print?</b> " <br/>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ (r.isPresent() ? r.getAsInt() : 1));
+                            </li>
+                            <li>&nbsp;</li>
+                            <li class="fragment">
+                                Function&lt;Integer,Integer&gt; add2 = x -> x + 2; <small>// add2 is a Functional interface; x is an inferred-type</small><br/>
+                                add2.compose(add2).apply(4) <span class="fragment">\(==\)</span> <span class="fragment">8; <small>// (add2 o add2)4</small></span>
+                            </li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h3>Semantics of lambda expressions</h3>
+                        <p>TODO</p>
+                    </section>
                 </section>
 
                 <section>
@@ -299,7 +350,10 @@
 
                 <section>
                     <h1>THE END</h1>
-                    <h3>Alen Ribic  / <a href="http://alenribic.com" target="_blank">alenribic.com</a></h3>
+                    <p><img src="img/oracle_clr.gif" style="margin:0;padding:0;border:0;"/></p>
+                    <p>
+                        <small><a href="http://alenribic.com" target="_blank">Alen Ribic</a> / <a href="https://twitter.com/alenribic" target="_blank">@alenribic</a></small>
+                    </p>
                 </section>
 
 			</div>
@@ -337,7 +391,6 @@
             Reveal.addEventListener( 'slidechanged', function( event ) {
                 MathJax.Hub.Rerender(event.currentSlide);
             });
-
 		</script>
 
 	</body>
