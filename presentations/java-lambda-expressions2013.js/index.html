@@ -218,7 +218,7 @@
                         <h3>Quiz</h3>
                         <p>
                             What would the <b>substitution</b> for the application of \(s\) to \(\lambda x.y\) look like?
-                            <p class="fragment">In term \(y\), the \(x\) substitutes \(s\) as follows: \(y[x := s]\)</p>
+                            <p class="fragment">In term \(y\), the \(x\) substitutes \(s\) as follows: \(y[x := s] \equiv y\)</p>
                         </p>
                         <p class="fragment">This demonstrates that \(\lambda x.y\) really is a constant function.</p>
                     </section>
@@ -245,7 +245,7 @@
                         <ul>
                             <li>Computational units that operate on some data (input) and produce some data (output)</li>
                             <li class="fragment">Can be passed around as any other values, thus termed <b>higher-order</b> functions</li>
-                            <li class="fragment">Naturally compose based on the formal parameters and return types, \((g \circ f)x\)</li>
+                            <li class="fragment">Naturally compose based on the formal parameters and return types, \((s \circ t)x\)</li>
                             <li class="fragment">
                                 Synonymous with the terms Lambda function, Anonymous function, and Closure
                                 <small>(Closure, if and only if the environment/stack is captured at the point that the lambda expression is created)</small>
@@ -345,7 +345,7 @@ Callable&lt;List&gt; mkList = LinkedList&lt;Integer&gt;::new;
                                 The meaning of <b>this</b> and <b>super</b> keywords appearing in a lambda body are the same
                                 as in the surrounding context.
                             </li>
-                            <li class="fragment">Lambda formal parameters cannot shadow the variables form the enclosing scope. <small>See: JSR335, Part B, 6.4</small></li>
+                            <li class="fragment">Lambda formal parameters cannot shadow the variables from the enclosing scope. <small>See: JSR335, Part B, 6.4</small></li>
                         </ul>
                         <aside class="notes">
                             Certain variables that are not declared final may instead be considered effectively final.
