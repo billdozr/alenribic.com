@@ -70,7 +70,7 @@
                         <li>Lambda expressions and Java</li>
                         <li>Lambda syntax and semantics in Java <small>(JSR 335)</small></li>
                         <li>Time to write some code</li>
-                        <li>Beyond Java 8</li>
+                        <li>JSR 335, work in progress</li>
                     </ul>
 
 					<aside class="notes">
@@ -318,9 +318,90 @@ Body = Expression
                             </li>
                         </ul>
                     </section>
+                    <section><h3>Semantics of lambda expressions</h3></section>
                     <section>
-                        <h3>Semantics of lambda expressions</h3>
-                        <p>TODO</p>
+                        <h4>Functional interface</h4>
+                        <p>A <b>functional interface</b> is an interface that has just one abstract method, and thus represents a single function contract.</p>
+                        <p class="fragment">
+                            Instances of functional interfaces can be created with a) <b>standard instantiation</b>,
+                            b) <b>lambda expressions</b>, c) <b>method references</b>, or d) <b>constructor references</b>.
+                        </p>
+                        <pre class="fragment"><code class="Java">
+Runnable r = new RunnableImpl();
+Runnable r = () -> out.println("Running”);
+BinaryOperator&lt;Integer&gt; max = Math::max;
+Callable&lt;List&gt; mkList = LinkedList&lt;Integer&gt;::new;
+                        </code></pre>
+                    </section>
+                    <section>
+                        <h4>Scoping rules</h4>
+                        <ul>
+                            <li>The scope of a formal parameter of a lambda expression is the entire body of the lambda expression.</li>
+                            <li class="fragment">
+                                Any local variable, formal parameter, or exception handler parameter used but not declared
+                                in a lambda expression must be either declared <b>final</b> or <b>effectively final</b>.
+                            </li>
+                            <li class="fragment">
+                                The meaning of <b>this</b> and <b>super</b> keywords appearing in a lambda body are the same
+                                as in the surrounding context.
+                            </li>
+                            <li class="fragment">Lambda formal parameters cannot shadow the variables form the enclosing scope. <small>See: JSR335, Part B, 6.4</small></li>
+                        </ul>
+                        <aside class="notes">
+                            Certain variables that are not declared final may instead be considered effectively final.
+
+                            A local variable or a method, constructor, lambda, or exception parameter is effectively final
+                            if it is not final but it never occurs as the left hand operand of an assignment operator (15.26)
+                            or as the operand of an increment or decrement operator (15.14, 15.15).
+
+                            <pre><code>
+void m1(int x) {
+    int y = 1;
+    foo(() -> x+y);
+    // Legal: x and y are both effectively final.
+}
+
+void m2(int x) {
+    int y;
+    if (..) y = 1;
+    foo(() -> x+y);
+    // Illegal: y is effectively final, but not definitely assigned.
+}
+                            </code></pre>
+                        </aside>
+                    </section>
+                    <section>
+                        <h4>Target type rules</h4>
+                        <p>An expression must be compatible with a type expected in the <b>context</b>; this type is called the <b>target type</b>.</p>
+                        <p class="fragment">
+                            First, lambda expressions, method and constructor references are termed <b>poly expressions</b> and their deduced type can be influenced by the target type.
+                            <small>(The same expression can have different types in different contexts)</small>
+                        </p>
+                        <p class="fragment">This enables us to take full advantage of <b>bounded polymorphism</b>.</p>
+                        <p class="fragment">
+                            Second, after the type of expression has been deduced, implicit <b>conversion</b> from
+                            type of the expression to the target type can sometimes be performed. <small>(e.g. primitive to boxed types, etc.)</small>
+                        </p>
+                        <p class="fragment">If neither strategy produces the appropriate type, a compile time error occurs.</p>
+                    </section>
+                    <section>
+                        <h4>Exception rules</h4>
+                        <p>
+                            If a checked exception is to be thrown from inside a lambda expression, the functional interface must declare that this checked exception can be thrown.
+                        </p>
+                        <p class="fragment">
+                            The exception is not propagated to the enclosing method or constructor.
+                            <small>(So it doesn't help if the enclosing method throws the same checked exception)</small>
+                        </p>
+                    </section>
+                    <section>
+                        <h4>Default methods</h4>
+                        <p>A <b>default method</b> is a method that is declared in an interface with the modifier <b>default</b>.</p>
+                        <p class="fragment">Its body provides a default implementation for any class that implements the interface without overriding the method.</p>
+                        <p class="fragment">It provides a mechanism for multiple inheritance of behavior.</p>
+                        <p class="fragment">Wait a minute, does this make Java interfaces <b>mixins</b>? :-)</p>
+                        <p class="fragment">And no, they don't fully replace abstract classes; default methods provide inheritance of behaviour (but not state)!</p>
+                        <pre class="fragment"><code>interface Superinterface { void foo() default { out.println("Hi"); } }</code></pre>
                     </section>
                 </section>
 
@@ -339,13 +420,25 @@ Body = Expression
                 </section>
 
                 <section>
-                    <h2>Beyond Java 8</h2>
-                    <p>TODO</p>
+                    <h2>JSR 335, work in progress</h2>
+                    <p>Unfinished items since 0.6.1</p>
+                    <ul>
+                        <li>Unchecked exceptions that can occur as the result of implicit overriding by lambda expressions need to be specified.</li>
+                        <li>Various low-level details of type inference need to be fully specified.</li>
+                        <li>New standard APIs need to be specified, including those to support implementation, reflection, and use of the new features.</li>
+                        <li>Certain error checks are required to guarantee that a lambda expression corresponds to a legal class declaration.</li>
+                    </ul>
                 </section>
 
                 <section>
                     <h2>References</h2>
-                    <p>TODO</p>
+                    <ul>
+                        <li>Wikipedia entry for <a href="http://en.wikipedia.org/wiki/Lambda_calculus" target="_blank">Lambda Calculus</a></li>
+                        <li><a href="ftp://ftp.cs.ru.nl/pub/CompMath.Found/lambda.pdf" target="_blank">Introduction to Lambda Calculus</a> paper written by Henk Barendregt and Erik Barendsen</li>
+                        <li><a href="http://jcp.org/en/jsr/detail?id=335" target="_blank">JSR 335 specification</a>: Lambda Expressions for the Java Programming Language</li>
+                        <li>Project Lambda: <a href="http://pti.kpi.ua/images/stories/JUG/jdk-lambdas-sritter.pdf" target="_blank">Simplifying Concurrent Programming in Java SE 8</a>, presentation deliver by Simon Ritter</li>
+                        <li>The Java Tutorials: <a href="http://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html" target="_blank">Lambda Expressions</a></li>
+                    </ul>
                 </section>
 
                 <section>
