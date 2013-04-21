@@ -194,8 +194,12 @@
                     </section>
                     <section>
                         <h3>Capture-avoiding substitutions</h3>
-                        <p>Suppose \(t\), \(s\) and \(r\) are lambda terms and \(x\) and \(y\) are variables.</p>
-                        <p class="fragment">The notation \(t[x := r]\) indicates substitution of \(r\) for \(x\) in \(t\) in a <b>capture-avoiding</b> manner. This is defined so that:</p>
+                        <p>Suppose \(t\), \(s\) and \(r\) are any lambda terms and \(x\) and \(y\) are only variables.</p>
+                        <p class="fragment">
+                            Substitution, written \(t[x := r]\), is the process of substituting all free occurrences of the
+                            variable \(x\) with \(r\) in the expression \(t\) in a <b>capture-avoiding</b> manner.
+                            We define it as follows:
+                        </p>
                         <p>
                             <ul>
                                 <li class="fragment">\(x[x := r]\) <span class="fragment">\(\equiv\)</span> <span class="fragment">\(r\)</span></li>
@@ -205,10 +209,13 @@
                                 <li class="fragment">\((\lambda y.t)[x := r]\) <span class="fragment">\(\equiv\)</span> <span class="fragment">\(\lambda y.(t[x := r])\) if \(x \neq y\) and \(y\) is not in the free variables of \(r\)</span></li>
                             </ul>
                         </p>
+                        <aside class="notes">
+                            Think of \([x := r]\) as the enclosing environment, where substitution will occur on the free occurrences of \(x\).
+                        </aside>
                     </section>
                     <section>
                         <h3>Beta reduction</h3>
-                        <p>The \(\beta\)-reduction rule states that an application of the form \((\lambda x.t)s\) reduces to the term \(t[x := s]\).</p>
+                        <p>The \(\beta\)-reduction captures the idea of function application. An application of the form \((\lambda x.t)s\) reduces to the term \(t[x := s]\).</p>
                         <p class="fragment">
                             For example, for every \(s\), \((\lambda x.x)s \mapsto x[x := s] \equiv s\).
                             <p class="fragment">This demonstrates that \(\lambda x.x\) really is the identity.</p>
@@ -217,8 +224,8 @@
                     <section data-state="soothe">
                         <h3>Quiz</h3>
                         <p>
-                            What would the <b>substitution</b> for the application of \(s\) to \(\lambda x.y\) look like?
-                            <p class="fragment">In term \(y\), the \(x\) substitutes \(s\) as follows: \(y[x := s] \equiv y\)</p>
+                            Given the application of \(s\) to \(\lambda x.y\), what would the <b>substitution</b> look like?
+                            <p class="fragment">In term \(y\), \(x\) is substituted with \(s\) as follows: \(y[x := s] \equiv y\)</p>
                         </p>
                         <p class="fragment">This demonstrates that \(\lambda x.y\) really is a constant function.</p>
                     </section>
