@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Haskell Lens - Viewing and updating data structures in Haskell</title>
+
+		<meta name="description" content="Haskell Lens - Viewing and updating data structures in Haskell">
+		<meta name="author" content="Alen Ribic">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<link rel="stylesheet" href="css/reveal.min.css">
+		<link rel="stylesheet" href="css/theme/sky.css" id="theme">
+
+		<!-- For syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- If the query includes 'print-pdf', use the PDF print sheet -->
+		<script>
+			document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+
+				<section>
+					<h1>Haskell lens</h1>
+					<h3>viewing and updating data structures in Haskell</h3>
+					<p>
+                        <small><a href="http://alenribic.com" target="_blank">Alen Ribic</a> / <a href="https://twitter.com/alenribic" target="_blank">@alenribic</a></small>
+					</p>
+                    <p>
+                        <small>August 2013, Lambda Luminaries</small><br/>
+                        &lambda;
+                    </p>
+				</section>
+                
+                <section>
+                    <blockquote>
+                        "Languages talk about multi-paradigm as if it's a good thing, but multi-paradigm means you can always do the bad thing if you feel you really need to."
+                    </blockquote>
+                    <small>--John Carmack (QuakeCon 2013)</small>
+                </section>
+
+				<section>
+					<h2>What is a Lens?</h2>
+                    <p class="fragment"><b>Definition<span class="fragment"></b></p>
+                    <p class="fragment"><small>If you want to scare a lot of people away ...</small></p>
+					<p class="fragment">
+                        <small>
+                        "Lens is a costate comonad coalgebra, in a sense that a comonad coalgebra is a f-algebra that preserves the comonad laws and it is a comonad coalgebra for the costate comonad. So costate comonad coalgebra is using those nouns in a form as adjectives modifying each other in sequence." <small>courtesy Edward Kmett</small> :-)
+                        </small>
+					</p>
+                    <p>
+                        <p class="fragment">Lenses are a powerful way of viewing and updating complex data structures</p>
+                        <p class="fragment">Lenses can be very handy if you have a lot of nested data</p>
+                    </p>
+					<aside class="notes">
+					</aside>
+				</section>
+                
+                <section>
+                    <section>
+                        <h2>Let's see what Lens give you</h2>
+                    </section>
+                    <section>
+                        <h4>Example</h4>
+                        <pre>
+data Arc = Arc
+  { _degree :: Int
+  , _minute :: Int
+  , _second :: Int } deriving Show
+
+data Location = Location
+  { _latitude :: Arc
+  , _longitude :: Arc } deriving Show
+
+data Person = Person
+  { _name :: String
+  , _age  :: Int
+  , _email :: String
+  , _descendants :: [Person]
+  , _homeLocation :: Location } deriving Show
+
+makeLenses ''Arc
+makeLenses ''Location
+makeLenses ''Person
+
+person1 = Person "Joe Blogs" 32 "joe.blogs@gmail.com"[
+    Person "Marry Blogs" 5 "" []
+    (Location (Arc 23 54 10) (Arc 11 42 50))
+  , Person "John Blogs" 13 "" []
+    (Location (Arc 23 54 12) (Arc 11 42 33)) ]
+  (Location (Arc 23 54 5) (Arc 11 42 59))
+</pre>
+                    </section>
+                    <section>
+                        <h3>How do we typically update the data in this sort of data structure?</h3>
+                    </section>
+                    <section>
+                        <h4>Record update syntax</h4>
+                        <pre>
+person1 {
+  _homeLocation = (_homeLocation person1) {
+    _latitude = (_latitude (_homeLocation person1)) {
+      _degree = _degree (_latitude (_homeLocation person1)) + 10
+    }
+  }
+}</pre>
+                        <p class="fragment">All that just to update the nested degree of latitude!!!</p>
+                    </section>
+                    <section>
+                        <h3>Taking a peek through the Lens ...</h3>
+                    </section>
+                    <section>
+                        <h4>Updating the degree field</h4>
+                        <pre class="fragment">
+homeLocation.latitude.degree +~ 10 $ person1</pre>
+                        <pre class="fragment">
+updateDegree = homeLocation.latitude.degree +~ 10
+updateDegree person1</pre>
+                        <ul>
+                            <li class="fragment">Nothing on the lines above require language changes!</li>
+                            <li class="fragment">Resembles the imperative style of assessors <small>Dot notation</small></li>
+                            <li class="fragment"><b>homeLocation</b>, <b>latitude</b> and <b>degree</b> are just lenses that were generated with <b>makeLenses</b> <small>Think of these lenses for the time being as just plain simple <b>assessors</b> (getters/setters)</small></li>
+                            <li class="fragment"><b>(.)</b> is function composition from the Haskell Prelude!</li>
+                            <li class="fragment"><b>(+~)</b> is an infix function that increments the target(s) numerical value</li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h3>Let's look at the type signatures for the generated lenses</h3>
+                        <pre class="fragment">
+homeLocation :: Functor f => (Location -> f Location) -> Person -> f Person
+latitude :: Functor f => (Arc -> f Arc) -> Location -> f Location
+degree :: Functor f => (Int -> f Int) -> Arc-> f Arc</pre>
+                        <p class="fragment">There exists a generalised type synonym</p>
+                        <pre class="fragment">
+type Lens' s a = Functor f => (a -> f a) -> s -> f s</pre>
+                        <p class="fragment">Actually</p>
+                        <pre class="fragment">
+type Lens' s a = Lens s s a a</pre>
+                        <pre class="fragment">
+type Lens s t a b = forall f. Functor f => (a -> f b) -> s -> f t</pre>
+                    </section>
+                </section>
+                
+                <section>
+                    <section>
+                        <h2>Explaining the Lens type</h2>
+                    </section>
+                    <section>
+                        A "<b>Lens</b> s t a b" is a purely functional reference
+                    </section>
+                    <section>
+                        Lens type
+                        <pre class="fragment">
+type Lens s t a b = forall f. Functor f => (a -> f b) -> s -> f t</pre>
+                        <p class="fragment">is isomorphic to</p>
+                        <pre class="fragment">
+type Lens s t a b = s -> (a, b -> t)</pre>
+                        <p class="fragment">The <b>s</b> is some structure, or state, and <b>a</b> is some smaller type that's conceptually inside <b>s</b>.</p>
+                        <p class="fragment">So we have the <b>s -> a</b> <small>(e.g. Person -> Location)</small></p>
+                        <p class="fragment">Another way to write this type <small>Note the distributive property in the two signatures</small></p>
+                        <pre class="fragment">
+type Lens s t a b = (s -> a, s -> b -> t)</pre>
+                        <p class="fragment">So, given <b>s</b>, we can replace <b>a</b> with <b>b</b>, and that gives us a <b>t</b></p>
+                        <p class="fragment">Often <b>a = b</b> and <b>s = t</b> (remember the Lens' type)</p>
+                        <p class="fragment">So we have <b>s -> a</b> (a getter) and <b>s -> b -> t</b> (a setter)</p>
+                    </section>
+                    <section>
+                        The Lens library has a number of combinator functions. Here we see the <b>view</b> (get the value out) and the <b>set</b> (set the new value). And a list of lenses named <b>_1</b> ... <b>_9</b>.
+                        <pre>
+view _2 ("hello", 5)
+=> 5</pre>
+                        <pre>
+set _2 "there" ("hello", 5)
+=> ("hello", "there")</pre>
+                        <p class="fragment">Note how the type in the second element of the tuple changes</p>
+                        <p class="fragment">This is precisely why we can't have only <b>a</b> but rather also need <b>b</b> in the <b>Lens s t a b</b> generic type parameter list</p>
+                        <p class="fragment">However, <b>a/b</b> and <b>s/t</b> are related</p>
+                    </section>
+                    <section>
+                        <h3>The power is in the dot</h3>
+                    </section>
+                    <section>
+                        The ability to compose the lenses using just the standard <b>(.)</b> is what gives lenses some serious power
+                    </section>
+                    <section>
+                        The type signature for function composition is
+                        <pre class="fragment">
+(.) :: (b -> c) -> (a -> b) -> (a -> c)</pre>
+                        <p class="fragment">Which is very similar to <b>fmap</b></p>
+                        <pre class="fragment">
+fmap :: (a -> b) -> f a -> f b</pre>
+                        <p class="fragment">In fact if you replace <b>a -></b> with <b>f</b> it’s exactly <b>fmap</b></p>
+                        <p class="fragment"><b>a -></b> is in fact a Functor!</p>
+                        <pre class="fragment">
+instance Functor ((->) r) where
+  fmap = (.)</pre>
+                        <p class="fragment">So for functions, fmap is just function composition. I.e. <b>(.).(.)</b> is the same as <b>fmap . fmap</b></p>
+                        <pre class="fragment">
+(.).(.) :: (b -> c) -> (a1 -> a2 -> b) -> (a1 -> a2 -> c)
+fmap . fmap :: (a -> b) -> f (f1 a) -> f (f1 b)</pre>
+                        <p class="fragment">In the fmap case we go a level deeper into functors</p>
+                        <pre class="fragment">
+homeLocation . latitude :: Lens' Person Arc</pre>
+                    </section>
+                    <section>
+                        <h3>Laws</h3>
+                        Lens is subject to the three common sense Lens laws
+                        <ul>
+                            <li class="fragment">
+                                1) You get back what you put in
+                                <pre>view l (set l b a) = b</pre>
+                            </li>
+                            <li class="fragment">
+                                2) Putting back what you got doesn't change anything
+                                <pre>set l (view l a) a = a</pre>
+                            </li>
+                            <li class="fragment">
+                                3) Setting twice is the same as setting once
+                                <pre>set l c (set l b a) = set l c a</pre>
+                            </li>
+                        </ul>
+                    </section>
+                </section>
+                
+                <section>
+                    <section>
+                        <h2>Traversals</h2>
+                    </section>
+                    <section>
+                        <h3>What's the Traversal?</h3>
+                        <p class="fragment">It enables you to traverse over a structure and change out its contents with monadic or Applicative side-effects</p>
+                    </section>
+                    <section>
+                        <p>The <b>Traversal</b> s t a b is a type synonym</p>
+                        <pre class="fragment">
+type Traversal s t a b = forall f. Applicative f => (a -> f b) -> s -> f t</pre>
+                        <p class="fragment">Wait a minute, this type signature looks very familiar</p>
+                        <p class="fragment">It's the Lens type signature but with the <b>Applicative</b> constraint!!!</p>
+                        <p class="fragment">It gets better. What do we know about Applicative that's important here?</p>
+                        <p class="fragment">Every Applicative is also a Foldable and a Functor, thus we can compose Lenses with Traversals!!!</p>
+                    </section>
+                    <section>
+                        <h4>Bringing Traversal into the mix</h4>
+                        <pre class="fragment">
+descendants.traversed.age +~ 1 $ person1</pre>
+                        <ul>
+                            <li class="fragment"><b>traversed</b> enables us to traverse any Traversable container <small>E.g. List, Tree, etc.</small></li>
+                            <li class="fragment">We traverse over a structure and change out its contents with monadic or Applicative side-effects</li>
+                        </ul>
+                    </section>
+                    <section>
+                        <p>Why stop there. Let's add some filtering ...</p>
+                        <pre class="fragment">
+forAge a = filtered (\p -> p^.age >= a)</pre>
+                        <p class="fragment"><b>filtered</b> can be used to obtain a Fold that can be composed with another Lens, Fold or Traversal</p>
+                        <pre class="fragment">
+descendants.traversed.(forAge 10).age +~ 1 $ person1</pre>
+                        <p class="fragment">Now this is some serious <b>expressive power</b><!-- that is bound to leave the OOP/imperative programmers scratching their heads-->!!!</p>
+                        <p class="fragment"><small><b>Sidenote:</b> "filtered" is not theoretically valid traversal unless it preserves the same structure</small></p>
+                    </section>
+                </section>
+                
+                <section>
+                    <section>
+                        <h2>There is so much more to Lens</h2>
+                    </section>
+                    <section>
+                        <h3>Be sure to also check out</h3>
+                        <ul>
+                            <!--<li>Folds</li>-->
+                            <li>Prisms</li>
+                            <li>Plates</li>
+                            <li>Zippers</li>
+                            <li>and more ...</li>
+                        </ul>
+                    </section>
+                </section>
+                
+                <section>
+                    <h2>References</h2>
+                    <ul>
+                        <li>Official Docs for the <a href="http://hackage.haskell.org/package/lens-3.9.0.2" target="_blank">lens package</a></li>
+                        <li>Slides from the <a href="http://comonad.com/haskell/Lenses-Folds-and-Traversals-NYC.pdf" target="_blank">NY-Haskell User Group</a></li>
+                        <li>Lens tutorial <a href="http://www.haskellforall.com/2013/05/program-imperatively-using-haskell.html" target="_blank">Program imperatively using Haskell lenses</a> by Gabriel Gonzalez</li>
+                        <li>Another tutorial <a href="http://adit.io/posts/2013-07-22-lenses-in-pictures.html" target="_blank">Lenses In Pictures</a> by Adit</li>
+                    </ul>
+                </section>
+
+				<section>
+					<h1>THE END</h1>
+					<h3>Alen Ribic  / <a href="http://alenribic.com" target="_blank">alenribic.com</a></h3>
+				</section>
+
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.min.js"></script>
+
+		<script>
+
+			// Full list of configuration options available here:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+				transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+				// Optional libraries used to extend on reveal.js
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+					{ src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+					// { src: 'plugin/search/search.js', async: true, condition: function() { return !!document.body.classList; } }
+					// { src: 'plugin/remotes/remotes.js', async: true, condition: function() { return !!document.body.classList; } }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
