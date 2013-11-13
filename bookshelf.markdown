@@ -253,3 +253,70 @@ ISBN-10: 0812974786
 </span>
 
 <iframe src="http://rcm.amazon.com/e/cm?t=lunasoftworks-20&o=1&p=8&l=as1&asins=0812974786&ref=qf_sp_asin_til&fc1=000000&IS2=1&lt1=_blank&m=amazon&lc1=0000FF&bc1=000000&bg1=FFFFFF&f=ifr" style="width:120px;height:240px;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>
+
+### Learning From Data by Yaser S. Abu-Mostafa, Malik Magdon-Ismail, Hsuan-Tien Lin
+
+<span class="meta-data">
+Hardcover: 213 pages<br/>
+Publisher: AMLBook (March 27, 2012)<br/>
+Language: English<br/>
+ISBN-10: 1600490069
+</span>
+
+<iframe src="http://rcm-na.amazon-adsystem.com/e/cm?t=lunasoftworks-20&o=1&p=8&l=as1&asins=1600490069&ref=qf_sp_asin_til&fc1=000000&IS2=1&lt1=_blank&m=amazon&lc1=0000FF&bc1=000000&bg1=FFFFFF&f=ifr" style="width:120px;height:240px;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>
+
+### Probability Theory: A Concise Course by Y.A. Rozanov
+
+<span class="meta-data">
+Series: Dover Books on Mathematics<br/>
+Paperback: 148 pages<br/>
+Publisher: Dover Publications (June 1, 1977)<br/>
+Language: English<br/>
+ISBN-10: 0486635449
+</span>
+
+<iframe src="http://rcm-na.amazon-adsystem.com/e/cm?t=lunasoftworks-20&o=1&p=8&l=as1&asins=0486635449&ref=qf_sp_asin_til&fc1=000000&IS2=1&lt1=_blank&m=amazon&lc1=0000FF&bc1=000000&bg1=FFFFFF&f=ifr" style="width:120px;height:240px;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>
+
+### The Computer and the Brain (Mrs. Hepsa Ely Silliman Memorial Lectures) by John von Neumann
+
+<span class="meta-data">
+Paperback: 112 pages <br/>
+Publisher: Yale University Press; 2 Sub edition (July 11, 2000)<br/>
+Language: English<br/>
+ISBN-10: 0300084730
+</span>
+
+<iframe src="http://rcm-na.amazon-adsystem.com/e/cm?t=lunasoftworks-20&o=1&p=8&l=as1&asins=0300084730&ref=qf_sp_asin_til&fc1=000000&IS2=1&lt1=_blank&m=amazon&lc1=0000FF&bc1=000000&bg1=FFFFFF&f=ifr" style="width:120px;height:240px;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>
+
+### A Book of Abstract Algebra: Second Edition by Charles C Pinter
+
+<span class="meta-data">
+Paperback: 400 pages<br/>
+Publisher: Dover Publications; Second Edition edition (December 17, 2009)<br/>
+Language: English<br/>
+ISBN-10: 0486474178
+</span>
+
+<iframe src="http://rcm-na.amazon-adsystem.com/e/cm?t=lunasoftworks-20&o=1&p=8&l=as1&asins=0486474178&ref=qf_sp_asin_til&fc1=000000&IS2=1&lt1=_blank&m=amazon&lc1=0000FF&bc1=000000&bg1=FFFFFF&f=ifr" style="width:120px;height:240px;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>
+
+### Euler: The Master of Us All (Dolciani Mathematical Expositions, No 22) by William Dunham
+
+<span class="meta-data">
+Paperback: 192 pages<br/>
+Publisher: The Mathematical Association of America (January 1, 1999)<br/>
+Language: English<br/>
+ISBN-10: 0883853280
+</span>
+
+<iframe src="http://rcm-na.amazon-adsystem.com/e/cm?t=lunasoftworks-20&o=1&p=8&l=as1&asins=0883853280&ref=qf_sp_asin_til&fc1=000000&IS2=1&lt1=_blank&m=amazon&lc1=0000FF&bc1=000000&bg1=FFFFFF&f=ifr" style="width:120px;height:240px;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>
+
+### Lambda-Calculus and Combinators: An Introduction by J. Roger Hindley, Jonathan P. Seldin
+
+<span class="meta-data">
+Hardcover: 358 pages<br/>
+Publisher: Cambridge University Press; 2 edition (August 11, 2008)<br/>
+Language: English<br/>
+ISBN-10: 0521898854
+</span>
+
+<iframe src="http://rcm-na.amazon-adsystem.com/e/cm?t=lunasoftworks-20&o=1&p=8&l=as1&asins=0521898854&ref=qf_sp_asin_til&fc1=000000&IS2=1&lt1=_blank&m=amazon&lc1=0000FF&bc1=000000&bg1=FFFFFF&f=ifr" style="width:120px;height:240px;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>
