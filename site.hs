@@ -74,6 +74,10 @@ main = hakyll $ do
         route idRoute
         compile copyFileCompiler
 
+    match "letters/**" $ do
+        route idRoute
+        compile copyFileCompiler
+
     -- Robots file for the crawler
     match "robots.txt" $ do
         route idRoute
