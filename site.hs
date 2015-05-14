@@ -108,7 +108,7 @@ addPostList = setFieldA "posts" $
 feedConfiguration :: FeedConfiguration
 feedConfiguration = FeedConfiguration
     { feedTitle       = "Alen Ribic"
-    , feedDescription = "programmer, consultant, husband and dad"
+    , feedDescription = "software engineer, entrepreneur, husband and dad"
     , feedAuthorName  = "Alen Ribic"
     , feedAuthorEmail = "alen.ribic@gmail.com"
     , feedRoot        = "http://alenribic.com"
