@@ -1,47 +1,43 @@
+<div id="posts">
+  <h1>Recent posts</h1>
+  <ul>
+$for(posts)$
+      <li>
+          <a href="$url$">$title$</a> - <em>$date$</em>
+      </li>
+$endfor$
+  </ul>
+  <p><a href="/posts.html">All posts&hellip;</a></p>
+
+  <h1>Tags</h1>
+  <div>
+      $tagcloud$
+  </div>
+</div>
 <div id="news">
   <h1>Current snapshot of my life</h1>
   <ul>
-    <li>Co-founder
-    of <a href="https://sweepsouth.com/">SweepSouth</a>, <a href="http://eldoenergy.com/">ELDO
-    Software</a> and Type Infinity</li>
-    <li>Living in Johannesburg, South Africa</li>
-    <li>My wife Aisha recently graduated with her doctoral degree in human genetics from the University of Cape Town</li>
-    <li>As a refresher to reading K&R book, I implemented a LISP-1 interpreter in C with support for tail-call optimization (Who said GOTO statements were evil?)</li>
-    <li>Built this website. See <a href="/posts/2011-08-04-and-we-are-live.html">And we are live</a>.</li>
-    <li>Working on some very exciting <i>stuff</i> this year that I
-  will share some insight into here in the near future</li>
+    <li>Living in SF, California</li>
+    <li>Co-founder at <a href="https://pandorahealth.com">Pandora Health</a> and <a href="https://sweepsouth.com/">SweepSouth</a></li>
+    <li>Invest in early stage tech startups now and then (so hit me up if you're working on interesting stuff!)</li>
+    <li>Revived this website recently!</li>
+    <li>Working on some very exciting <i>stuff</i> this year that I will share insights about soon</li>
   </ul>
 </div>
 <div id="about">
     <h1>About</h1>
     <div>
-          <img src="/images/alen-ribic3.jpg" height="110" alt="Alen Ribic">
+          <img src="/images/alen-ribic4.jpg" height="110" alt="Alen Ribic">
           <p>Alen Ribic</p>
-          <p>Software engineer, entrepreneur, husband and dad.<br/>Passionate about solving real-life problems through<br/>maths and computer science.</p>
+          <p>Builder, tech entrepreneur, math & physics major, husband and dad.<br/>Passionate about solving real-life problems through<br/>maths and computer science.</p>
           <!--<p>alen dot ribic @ gmail dot com</p>-->
           <p>
             <a href="https://twitter.com/alenribic">Twitter</a>
           | <a href="https://github.com/billdozr">GitHub</a>
-          | <a href="http://about.me/alenribic">About.me</a>
+          <!-- | <a href="http://about.me/alenribic">About.me</a> -->
           | <a href="http://feeds.feedburner.com/alenribic">Feed</a>
           </p>
           <p><i>The views expressed on this Web site are my own and do
           not necessarily reflect the views of any other party.</i></p>
-    </div>
-</div>
-<div id="posts">
-    <h1>Recent posts</h1>
-    <ul>
-$for(posts)$
-        <li>
-            <a href="$url$">$title$</a> - <em>$date$</em>
-        </li>
-$endfor$
-    </ul>
-    <p><a href="/posts.html">All posts&hellip;</a></p>
-
-    <h1>Tags</h1>
-    <div>
-        $tagcloud$
     </div>
 </div>

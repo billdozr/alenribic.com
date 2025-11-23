@@ -142,7 +142,7 @@ pandocMathCompiler =
 feedConfiguration :: FeedConfiguration
 feedConfiguration = FeedConfiguration
     { feedTitle       = "Alen Ribic"
-    , feedDescription = "software engineer, entrepreneur, husband and dad"
+    , feedDescription = "builder, tech entrepreneur, math & physics major"
     , feedAuthorName  = "Alen Ribic"
     , feedAuthorEmail = "alen.ribic@gmail.com"
     , feedRoot        = "http://alenribic.com"
