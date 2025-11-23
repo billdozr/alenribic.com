@@ -2,6 +2,7 @@
 
 import Data.Monoid (mappend)
 import Hakyll
+import Text.Pandoc.Options
 
 main :: IO ()
 main = hakyllWith config $ do
@@ -21,7 +22,7 @@ main = hakyllWith config $ do
     -- Render each and every post
     match "posts/*" $ do
         route $ setExtension "html"
-        compile $ pandocCompiler
+        compile $ pandocMathCompiler
             >>= saveSnapshot "content"
             >>= loadAndApplyTemplate "templates/post.html" (postCtx tags)
             >>= loadAndApplyTemplate "templates/default.html" (postCtx tags)
@@ -59,7 +60,7 @@ main = hakyllWith config $ do
     -- Bookshelf page
     match "bookshelf.markdown" $ do
         route $ setExtension "html"
-        compile $ pandocCompiler
+        compile $ pandocMathCompiler
             >>= loadAndApplyTemplate "templates/default.html" defaultContext
             >>= relativizeUrls
 
@@ -120,6 +121,22 @@ postCtx tags =
     dateField "date" "%B %e, %Y" `mappend`
     tagsField "prettytags" tags `mappend`
     defaultContext
+
+-- Pandoc compiler with math support
+pandocMathCompiler :: Compiler (Item String)
+pandocMathCompiler =
+    let mathExtensions = extensionsFromList
+            [ Ext_tex_math_dollars
+            , Ext_tex_math_double_backslash
+            , Ext_latex_macros
+            ]
+        defaultExtensions = writerExtensions defaultHakyllWriterOptions
+        newExtensions = defaultExtensions <> mathExtensions
+        writerOptions = defaultHakyllWriterOptions
+            { writerExtensions = newExtensions
+            , writerHTMLMathMethod = MathJax ""
+            }
+    in pandocCompilerWith defaultHakyllReaderOptions writerOptions
 
 -- Feed configuration
 feedConfiguration :: FeedConfiguration
