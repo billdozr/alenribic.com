@@ -134,23 +134,6 @@ cabal build
 cabal run site rebuild
 ```
 
-## Migration Notes
-
-### Changes from Old Version
-
-1. **Arrow-based → Applicative API**: The site has been migrated from the deprecated arrow-based API (`>>>`, `arr`, etc.) to the modern applicative-style Hakyll API
-2. **Template Syntax**: Updated templates to use `$for(posts)$...$endfor$` instead of direct `$posts$` substitution
-3. **Build System**: Now using modern Cabal with explicit `.cabal` file
-4. **YAML Fixes**: Fixed post titles with special characters by adding quotes
-
-### Files Modified
-
-- `site.hs` - Complete rewrite using modern Hakyll API
-- `templates/posts.html` - Updated template syntax
-- `templates/index.html` - Updated template syntax
-- `posts/2012-07-08-haskell-an-attempt-at-tic-tac-toe.markdown` - Fixed YAML
-- `posts/2012-08-01-hs-task-an-in-code-task-management-utility.markdown` - Fixed YAML
-
 ## RSS Feed
 
 The site automatically generates an RSS feed at `/rss.xml` with the 10 most recent posts.
@@ -181,10 +164,10 @@ If you see YAML parsing errors when adding posts, ensure:
 
 ## License
 
-© 2014 Alen Ribic
+© 2025 Alen Ribic
 
 ## Links
 
 - Author: [Alen Ribic](http://alenribic.com)
-- Twitter: [@alenribic](https://twitter.com/alenribic)
+- X: [@alenribic](https://twitter.com/alenribic)
 - GitHub: [billdozr](https://github.com/billdozr)
