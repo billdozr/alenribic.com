@@ -1,0 +1,17 @@
+cabal-version:      3.0
+name:               alenribic-site
+version:            0.1.0.0
+synopsis:           Personal website and blog
+description:        Static site generator for alenribic.com using Hakyll
+license:            BSD-3-Clause
+author:             Alen Ribic
+maintainer:         alen.ribic@gmail.com
+build-type:         Simple
+
+executable site
+  main-is:          site.hs
+  build-depends:    base >= 4.12 && < 5,
+                    hakyll >= 4.16 && < 4.17
+  default-language: Haskell2010
+  ghc-options:      -Wall
+                    -threaded

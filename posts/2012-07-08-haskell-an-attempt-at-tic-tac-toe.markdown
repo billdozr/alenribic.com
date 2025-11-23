@@ -1,5 +1,5 @@
 ---
-title: Haskell: an attempt at tic-tac-toe
+title: "Haskell: an attempt at tic-tac-toe"
 author: Alen Ribic
 date: July 8, 2012
 tags: haskell, games

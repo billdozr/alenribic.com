@@ -1,5 +1,5 @@
 ---
-title: Hs-task: An in-code task management utility
+title: "Hs-task: An in-code task management utility"
 author: Alen Ribic
 date: August 1, 2012
 tags: haskell
