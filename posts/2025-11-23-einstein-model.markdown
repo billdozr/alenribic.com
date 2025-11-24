@@ -101,27 +101,19 @@ Then enter:
 
 ```
 f LBL A
+RCL ÷ 0
 1/x
-RCL 0
-×
-STO 1
-RCL 1
+g x²
+g LASTx
 e^x
-STO 2
+×
+g LASTx
 1
 -
-ENTER
-×
-STO 3
-RCL 1
-ENTER
-×
-RCL 2
-×
+g x²
+÷
 3
 ×
-RCL 3
-÷
 g RTN
 ```
 
@@ -226,3 +218,7 @@ Your HP-15C can now compute:
 * Entropy change $\Delta S = \int C_V/T,dT$
 
 All directly from statistical mechanics and all on a pocket calculator that has stood the test of time.
+
+***
+
+[Edit: 2025-11-24] Thanks to u/Blue_Aluminium from r/calculators for suggesting a [cleaner, shorter version](https://www.reddit.com/r/calculators/comments/1p52clj/comment/nqkoi3v/) of the main subroutine.
