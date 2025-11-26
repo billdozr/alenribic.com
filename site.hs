@@ -175,5 +175,5 @@ feedConfiguration = FeedConfiguration
     , feedDescription = "builder, tech entrepreneur, math & physics major"
     , feedAuthorName  = "Alen Ribic"
     , feedAuthorEmail = "alen.ribic@gmail.com"
-    , feedRoot        = "http://alenribic.com"
+    , feedRoot        = "https://alenribic.com"
     }
