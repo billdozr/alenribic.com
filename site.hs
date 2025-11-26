@@ -49,7 +49,7 @@ main = hakyllWith config $ do
             let indexCtx =
                     listField "posts" (postCtx tags) (return posts) `mappend`
                     field "tagcloud" (\_ -> renderTagCloud 100 120 tags) `mappend`
-                    constField "title" "Home" `mappend`
+                    constField "title" "notes from a local reference frame" `mappend`
                     defaultContext
 
             makeItem ""
