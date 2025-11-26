@@ -2,6 +2,7 @@
 
 import Data.Monoid (mappend)
 import Hakyll
+import System.FilePath (replaceExtension)
 import Text.Pandoc.Options
 
 main :: IO ()
@@ -72,6 +73,25 @@ main = hakyllWith config $ do
             posts <- fmap (take 10) . recentFirst =<< loadAllSnapshots "posts/*" "content"
             renderRss feedConfiguration feedCtx posts
 
+    -- Render sitemap
+    create ["sitemap.xml"] $ do
+        route idRoute
+        compile $ do
+            posts <- loadAll "posts/*"
+            let root = feedRoot feedConfiguration
+                staticPages =
+                    [ root ++ "/"
+                    , root ++ "/posts.html"
+                    , root ++ "/bookshelf.html"
+                    ]
+                sitemapCtx =
+                    listField "entries" sitemapEntryCtx (return posts) `mappend`
+                    listField "pages" defaultContext
+                        (mapM makeItem staticPages) `mappend`
+                    defaultContext
+            makeItem ""
+                >>= loadAndApplyTemplate "templates/sitemap.xml" sitemapCtx
+
     -- Read templates
     match "templates/*" $ compile templateBodyCompiler
 
@@ -122,6 +142,16 @@ postCtx tags =
     tagsField "prettytags" tags `mappend`
     defaultContext
 
+sitemapEntryCtx :: Context String
+sitemapEntryCtx =
+    constField "root" (feedRoot feedConfiguration) `mappend`
+    field "url" (\item -> do
+        let identifier = itemIdentifier item
+        let path = toFilePath identifier
+        let htmlPath = replaceExtension path "html"
+        return $ feedRoot feedConfiguration ++ "/" ++ htmlPath) `mappend`
+    defaultContext
+
 -- Pandoc compiler with math support
 pandocMathCompiler :: Compiler (Item String)
 pandocMathCompiler =
@@ -141,7 +171,7 @@ pandocMathCompiler =
 -- Feed configuration
 feedConfiguration :: FeedConfiguration
 feedConfiguration = FeedConfiguration
-    { feedTitle       = "Alen Ribic"
+    { feedTitle       = "Alen Ribic - notes from a local reference frame"
     , feedDescription = "builder, tech entrepreneur, math & physics major"
     , feedAuthorName  = "Alen Ribic"
     , feedAuthorEmail = "alen.ribic@gmail.com"
